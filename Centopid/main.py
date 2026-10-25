@@ -26,31 +26,31 @@ def reiniciar():
 # END REINICIAR
 
 # Botoes
-button_surface = pygame.image.load("Centopid/imagens/play.png")
+button_surface = pygame.image.load("imagens/play.png")
 button_surface = pygame.transform.scale(button_surface, (210, 109))
 button = Bib_Centopid.Button(button_surface, 363, 410)
 
-button_surface2 = pygame.image.load("Centopid/imagens/volta.png")
+button_surface2 = pygame.image.load("imagens/volta.png")
 button_surface2 = pygame.transform.scale(button_surface2, (104, 79))
 button2 = Bib_Centopid.Button(button_surface2, 52, 460)
 
-button_sergio = pygame.image.load("Centopid/imagens/sergio.png")
+button_sergio = pygame.image.load("imagens/sergio.png")
 button_sergio = pygame.transform.scale(button_sergio, (205, 297))
 sergio = Bib_Centopid.Button(button_sergio, 216, 237)
 
-button_claudio = pygame.image.load("Centopid/imagens/claudio.png")
+button_claudio = pygame.image.load("imagens/claudio.png")
 button_claudio = pygame.transform.scale(button_claudio, (198, 293))
 claudio = Bib_Centopid.Button(button_claudio, 493, 238)
 
-button_curto = pygame.image.load("Centopid/imagens/curto.png")
+button_curto = pygame.image.load("imagens/curto.png")
 button_curto = pygame.transform.scale(button_curto, (183, 91))
 curto = Bib_Centopid.Button(button_curto, 389, 222)
 
-button_infinito = pygame.image.load("Centopid/imagens/infinito.png")
+button_infinito = pygame.image.load("imagens/infinito.png")
 button_infinito = pygame.transform.scale(button_infinito, (180, 91))
 infinito = Bib_Centopid.Button(button_infinito, 394, 348)
 
-button_surface3 = pygame.image.load("Centopid/imagens/casa.png")
+button_surface3 = pygame.image.load("imagens/casa.png")
 button_surface3 = pygame.transform.scale(button_surface3, (121, 122))
 button3 = Bib_Centopid.Button(button_surface3, 81, 413)
 
@@ -60,11 +60,11 @@ grupo_sprites = pygame.sprite.Group()
 grupo_sprites.add(food)
 
 # Carregar imagens de fundo
-BackGround = Bib_Centopid.Background('Centopid/imagens/background.png', [0, 0])
-Tela_Inicial = Bib_Centopid.Background('Centopid/imagens/inicio.png', [0, 0])
-Tela_Selecao = Bib_Centopid.Background('Centopid/imagens/selecao.png', [0, 0])
-Tela_Modo = Bib_Centopid.Background('Centopid/imagens/modo.png', [0, 0])
-Tela_Creditos = Bib_Centopid.Background('Centopid/imagens/creditos.png', [0, 0])
+BackGround = Bib_Centopid.Background('imagens/background.png', [0, 0])
+Tela_Inicial = Bib_Centopid.Background('imagens/inicio.png', [0, 0])
+Tela_Selecao = Bib_Centopid.Background('imagens/selecao.png', [0, 0])
+Tela_Modo = Bib_Centopid.Background('imagens/modo.png', [0, 0])
+Tela_Creditos = Bib_Centopid.Background('imagens/creditos.png', [0, 0])
 
 # Tamanho da tela
 largura = 800
