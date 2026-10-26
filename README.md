@@ -31,6 +31,10 @@ Trabalho-GCS/
 - Python 3
 - Pygame
 
+### Instalar a biblioteca Pygame via terminal Linux(Ubuntu)
+- sudo apt install -y python3-pygame
+**obs:** O recomendado é instalar um ambiente virtual para que o linux não reclame, porem se for apenas para projetos academicos, a instalação via _sudo apt_ funciona muito bem. 
+
 ## Como executar
 
 1. Clone o repositório.
