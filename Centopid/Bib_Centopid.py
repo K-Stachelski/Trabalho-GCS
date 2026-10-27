@@ -27,8 +27,8 @@ class Food(pygame.sprite.Sprite):
         self.rect.topleft = (x, y)
 
     def sortear_posicao(self):
-        self.rect.x = randint(50, 700)
-        self.rect.y = randint(50, 400)
+        self.rect.x = randint(0, largura - self.rect.width)
+        self.rect.y = randint(0, altura - self.rect.height)
 
 # Cria botoes
 class Button():
