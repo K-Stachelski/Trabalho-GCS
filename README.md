@@ -17,7 +17,6 @@ Centopid é um jogo desenvolvido em **Python** utilizando a biblioteca **Pygame*
 
 ```text
 Trabalho-GCS/
-├── CONTRIBUTING.md
 ├── README.md
 └── Centopid/
     ├── main.py
