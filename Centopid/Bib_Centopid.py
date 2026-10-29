@@ -20,7 +20,7 @@ class Food(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.sprites = []
-        self.sprites.append(pygame.image.load('imagens/comida.png'))
+        self.sprites.append(pygame.image.load('Centopid/imagens/comida.png'))
         self.atual = 0
         self.image = self.sprites[self.atual]
         self.rect = self.image.get_rect()

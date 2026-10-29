@@ -11,7 +11,7 @@ pygame.init()
 # Reiniciar variáveis do jogo
 def reiniciar():
     global pontos, tam_inicial, x_cobra, y_cobra, lista_cabeca, lista_cobra
-    global velocidade, x_controle, y_controle, morreu
+    global velocidade, x_controle, y_controle, morreu, pausado
     pontos = 0
     tam_inicial = 2
     x_cobra = int(largura // 2)
@@ -22,35 +22,36 @@ def reiniciar():
     x_controle = velocidade
     y_controle = 0
     morreu = False
+    pausado = False
     food.sortear_posicao()
 # END REINICIAR
 
 # Botoes
-button_surface = pygame.image.load("imagens/play.png")
+button_surface = pygame.image.load("Centopid/imagens/play.png")
 button_surface = pygame.transform.scale(button_surface, (210, 109))
 button = Bib_Centopid.Button(button_surface, 363, 410)
 
-button_surface2 = pygame.image.load("imagens/volta.png")
+button_surface2 = pygame.image.load("Centopid/imagens/volta.png")
 button_surface2 = pygame.transform.scale(button_surface2, (104, 79))
 button2 = Bib_Centopid.Button(button_surface2, 52, 460)
 
-button_sergio = pygame.image.load("imagens/sergio.png")
+button_sergio = pygame.image.load("Centopid/imagens/sergio.png")
 button_sergio = pygame.transform.scale(button_sergio, (205, 297))
 sergio = Bib_Centopid.Button(button_sergio, 216, 237)
 
-button_claudio = pygame.image.load("imagens/claudio.png")
+button_claudio = pygame.image.load("Centopid/imagens/claudio.png")
 button_claudio = pygame.transform.scale(button_claudio, (198, 293))
 claudio = Bib_Centopid.Button(button_claudio, 493, 238)
 
-button_curto = pygame.image.load("imagens/curto.png")
+button_curto = pygame.image.load("Centopid/imagens/curto.png")
 button_curto = pygame.transform.scale(button_curto, (183, 91))
 curto = Bib_Centopid.Button(button_curto, 389, 222)
 
-button_infinito = pygame.image.load("imagens/infinito.png")
+button_infinito = pygame.image.load("Centopid/imagens/infinito.png")
 button_infinito = pygame.transform.scale(button_infinito, (180, 91))
 infinito = Bib_Centopid.Button(button_infinito, 394, 348)
 
-button_surface3 = pygame.image.load("imagens/casa.png")
+button_surface3 = pygame.image.load("Centopid/imagens/casa.png")
 button_surface3 = pygame.transform.scale(button_surface3, (121, 122))
 button3 = Bib_Centopid.Button(button_surface3, 81, 413)
 
@@ -60,11 +61,11 @@ grupo_sprites = pygame.sprite.Group()
 grupo_sprites.add(food)
 
 # Carregar imagens de fundo
-BackGround = Bib_Centopid.Background('imagens/background.png', [0, 0])
-Tela_Inicial = Bib_Centopid.Background('imagens/inicio.png', [0, 0])
-Tela_Selecao = Bib_Centopid.Background('imagens/selecao.png', [0, 0])
-Tela_Modo = Bib_Centopid.Background('imagens/modo.png', [0, 0])
-Tela_Creditos = Bib_Centopid.Background('imagens/creditos.png', [0, 0])
+BackGround = Bib_Centopid.Background('Centopid/imagens/background.png', [0, 0])
+Tela_Inicial = Bib_Centopid.Background('Centopid/imagens/inicio.png', [0, 0])
+Tela_Selecao = Bib_Centopid.Background('Centopid/imagens/selecao.png', [0, 0])
+Tela_Modo = Bib_Centopid.Background('Centopid/imagens/modo.png', [0, 0])
+Tela_Creditos = Bib_Centopid.Background('Centopid/imagens/creditos.png', [0, 0])
 
 # Tamanho da tela
 largura = 800
@@ -85,6 +86,7 @@ rec2 = 0
 inicio = 0
 modo = 0
 skin = 0
+pausado = False
 
 while True:
     relogio.tick(60)
@@ -195,7 +197,9 @@ while True:
 
             # Controle de movimento da centopeia
             if evento.type == KEYDOWN:
-                if (evento.key == K_a or evento.key == K_LEFT) and x_controle != velocidade:
+                if evento.key == K_p:
+                    pausado = True
+                elif (evento.key == K_a or evento.key == K_LEFT) and x_controle != velocidade:
                     x_controle = -velocidade
                     y_controle = 0
                 elif (evento.key == K_d or evento.key == K_RIGHT) and x_controle != -velocidade:
@@ -207,6 +211,37 @@ while True:
                 elif (evento.key == K_s or evento.key == K_DOWN) and y_controle != -velocidade:
                     y_controle = velocidade
                     x_controle = 0
+
+        # Loop do estado de Jogo Pausado
+        while pausado:
+            fonte_pausa = pygame.font.SysFont('Comic Sans', 40, True, False)
+            texto_pausa = fonte_pausa.render("JOGO PAUSADO", True, (255, 255, 255))
+            texto_continuar = fonte.render("Pressione 'P' para continuar ou 'E' para sair", True, (255, 255, 255))
+            
+            ret_p = texto_pausa.get_rect(center=(400, 220))
+            ret_c = texto_continuar.get_rect(center=(400, 270))
+
+            s = pygame.Surface((largura, altura))
+            s.set_alpha(128)
+            s.fill((0, 0, 0))
+            tela.blit(s, (0, 0))
+            
+            tela.blit(texto_pausa, ret_p)
+            tela.blit(texto_continuar, ret_c)
+            pygame.display.flip()
+
+            for evento in pygame.event.get():
+                if evento.type == QUIT:
+                    pygame.quit()
+                    exit()
+                if evento.type == KEYDOWN:
+                    if evento.key == K_p:
+                        pausado = False
+                    elif evento.key == K_e:
+                        pausado = False
+                        inicio = 0
+                        rec0 = rec if modo == 1 else rec2
+                        reiniciar()
 
         x_cobra += x_controle
         y_cobra += y_controle
@@ -257,7 +292,7 @@ while True:
             
             textinho = fonte3.render(msg, True, (255, 255, 255))
             textinho2 = fonte2.render(msg2, True, (255, 255, 255))
-            textinho3 = fonte2.render(msg3, True, (255, 255, 255))
+            textinho3 = fonte3.render(msg3, True, (255, 255, 255))
             
             ret_textinho = textinho.get_rect(center=(400, 215))
             ret_textinho2 = textinho2.get_rect(center=(400, 250))
