@@ -81,8 +81,7 @@ relogio = pygame.time.Clock()
 
 cont = 0
 rec0 = 0
-rec = 0
-rec2 = 0
+rec, rec2 = Bib_Centopid.carregar_recordes()
 inicio = 0
 modo = 0
 skin = 0
@@ -268,8 +267,10 @@ while True:
             pontos += 1
             if modo == 1 and pontos >= rec:
                 rec = pontos
+                Bib_Centopid.salvar_recordes(rec, rec2)
             elif modo == 2 and pontos >= rec2:
                 rec2 = pontos
+                Bib_Centopid.salvar_recordes(rec, rec2)
 
             if not (modo == 1 and pontos >= 30):
                 food.sortear_posicao()

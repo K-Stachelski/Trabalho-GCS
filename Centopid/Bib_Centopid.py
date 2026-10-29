@@ -1,6 +1,7 @@
 import pygame
 from random import randint
 import os
+import json
 
 largura = 800
 altura = 500
@@ -56,3 +57,24 @@ def aumenta_cobra(lista_cobra):
 def aumenta_cobra2(lista_cobra):
     for xy in lista_cobra:
         pygame.draw.circle(tela, (126, 20, 186), (int(xy[0]), int(xy[1])), 15) # skin Cláudio
+
+ARQUIVO_SAVE = "save_jogo.json"
+
+def carregar_recordes():
+    # Se o arquivo de save existir, lê os valores de lá
+    if os.path.exists(ARQUIVO_SAVE):
+        try:
+            with open(ARQUIVO_SAVE, "r") as f:
+                dados = json.load(f)
+                return dados.get("rec_curto", 0), dados.get("rec_infinito", 0)
+        except:
+            return 0, 0
+    return 0, 0
+
+def salvar_recordes(rec_curto, rec_infinito):
+    dados = {
+        "rec_curto": rec_curto,
+        "rec_infinito": rec_infinito
+    }
+    with open(ARQUIVO_SAVE, "w") as f:
+        json.dump(dados, f)
