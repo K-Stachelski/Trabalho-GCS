@@ -1,11 +1,65 @@
 import pygame
 from random import randint
 import os
+import json
 
 largura = 800
 altura = 500
 
 tela = pygame.display.set_mode((largura, altura))
+
+CAMINHO_PADRAO_RECORDES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'recordes.json')
+RECORDES_PADRAO = {'rec0': 0, 'rec': 0, 'rec2': 0}
+
+def salvar_recordes(recordes, caminho=None):
+    if caminho is None:
+        caminho = CAMINHO_PADRAO_RECORDES
+
+    dados_salvar = {}
+    for chave in ('rec0', 'rec', 'rec2'):
+        try:
+            val = int(recordes.get(chave, 0))
+            dados_salvar[chave] = max(0, val)
+        except (ValueError, TypeError):
+            dados_salvar[chave] = 0
+
+    try:
+        diretorio = os.path.dirname(caminho)
+        if diretorio and not os.path.exists(diretorio):
+            os.makedirs(diretorio, exist_ok=True)
+        with open(caminho, 'w', encoding='utf-8') as f:
+            json.dump(dados_salvar, f, indent=4)
+        return True
+    except OSError:
+        return False
+
+def carregar_recordes(caminho=None):
+    if caminho is None:
+        caminho = CAMINHO_PADRAO_RECORDES
+
+    if not os.path.exists(caminho):
+        salvar_recordes(RECORDES_PADRAO, caminho)
+        return dict(RECORDES_PADRAO)
+
+    try:
+        with open(caminho, 'r', encoding='utf-8') as f:
+            dados = json.load(f)
+
+        if not isinstance(dados, dict):
+            raise ValueError("Conteúdo de recordes não é um dicionário")
+
+        recordes_validos = {}
+        for chave in ('rec0', 'rec', 'rec2'):
+            valor = dados.get(chave)
+            if isinstance(valor, int) and not isinstance(valor, bool) and valor >= 0:
+                recordes_validos[chave] = valor
+            else:
+                raise ValueError(f"Valor inválido ou ausente para a chave: {chave}")
+
+        return recordes_validos
+    except Exception:
+        salvar_recordes(RECORDES_PADRAO, caminho)
+        return dict(RECORDES_PADRAO)
 
 # Carregar Fundo de tela
 class Background(pygame.sprite.Sprite):
