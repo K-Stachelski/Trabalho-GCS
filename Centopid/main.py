@@ -6,6 +6,9 @@ import os
 import time
 import Bib_Centopid
 
+# Garante que o diretorio de execucao seja a pasta onde os recursos do jogo estao localizados
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 pygame.init()
 
 # Reiniciar variáveis do jogo
