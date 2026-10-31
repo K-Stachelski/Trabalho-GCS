@@ -6,6 +6,9 @@ import os
 import time
 import Bib_Centopid
 
+# Garante que o diretorio de execucao seja a pasta onde os recursos do jogo estao localizados
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 pygame.init()
 
 # Reiniciar variáveis do jogo
@@ -80,8 +83,12 @@ pygame.display.set_caption('CENTOPID')
 relogio = pygame.time.Clock()
 
 cont = 0
-rec0 = 0
-rec, rec2 = Bib_Centopid.carregar_recordes()
+
+recordes = Bib_Centopid.carregar_recordes()
+rec0 = recordes['rec0']
+rec = recordes['rec']
+rec2 = recordes['rec2']
+
 inicio = 0
 modo = 0
 skin = 0
@@ -265,12 +272,18 @@ while True:
         # Colisão com a comidinha
         if cobrinha.colliderect(food.rect):
             pontos += 1
-            if modo == 1 and pontos >= rec:
+            novo_recorde = False
+            if modo == 1 and pontos > rec:
                 rec = pontos
-                Bib_Centopid.salvar_recordes(rec, rec2)
-            elif modo == 2 and pontos >= rec2:
+                rec0 = max(rec0, rec)
+                novo_recorde = True
+            elif modo == 2 and pontos > rec2:
                 rec2 = pontos
-                Bib_Centopid.salvar_recordes(rec, rec2)
+                rec0 = max(rec0, rec2)
+                novo_recorde = True
+
+            if novo_recorde:
+                Bib_Centopid.salvar_recordes({'rec0': rec0, 'rec': rec, 'rec2': rec2})
 
             if not (modo == 1 and pontos >= 30):
                 food.sortear_posicao()
@@ -321,6 +334,7 @@ while True:
                         if evento.key == K_e:
                             inicio = 0
                             rec0 = rec if modo == 1 else rec2
+                            Bib_Centopid.salvar_recordes({'rec0': rec0, 'rec': rec, 'rec2': rec2})
                             reiniciar()
 
                 tela.blit(textinho, ret_textinho)
@@ -348,6 +362,7 @@ while True:
                             time.sleep(0.1)
                             inicio = 0
                             rec0 = rec
+                            Bib_Centopid.salvar_recordes({'rec0': rec0, 'rec': rec, 'rec2': rec2})
                             modo = 0
                             reiniciar()
                             break
