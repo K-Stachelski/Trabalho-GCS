@@ -16,6 +16,12 @@ pygame.mixer.init()
 pygame.mixer.music.load('menu.mp3')
 pygame.mixer.music.set_volume(0.3)
 pygame.mixer.music.play(-1)
+# Efeitos sonoros
+som_comida = pygame.mixer.Sound('sons/comida.wav')
+som_fim = pygame.mixer.Sound('sons/fim.wav')
+
+som_comida.set_volume(0.7)
+som_fim.set_volume(0.7)
 
 # Reiniciar variáveis do jogo
 def reiniciar():
@@ -233,9 +239,12 @@ while True:
         parede_direita = pygame.draw.rect(tela, (0, 0, 0), (799, 0, 30, 500))
 
         # Colisão com a comidinha
+        
         if cobrinha.colliderect(food.rect):
-            pontos += 1
+            pontos += food.pontos
+            som_comida.play()
             novo_recorde = False
+
             if modo == 1 and pontos > rec:
                 rec = pontos
                 rec0 = max(rec0, rec)
@@ -246,12 +255,17 @@ while True:
                 novo_recorde = True
 
             if novo_recorde:
-                Bib_Centopid.salvar_recordes({'rec0': rec0, 'rec': rec, 'rec2': rec2})
+                Bib_Centopid.salvar_recordes({
+                    'rec0': rec0,
+                    'rec': rec,
+                    'rec2': rec2
+                })
 
             if not (modo == 1 and pontos >= 30):
+                tam_inicial += food.crescimento
                 food.sortear_posicao()
-                tam_inicial += 2
                 velocidade += 0.2
+
 
         # Atualiza rastro da cobra
         lista_cabeca = [x_cobra, y_cobra]
@@ -280,7 +294,8 @@ while True:
             ret_textinho = textinho.get_rect(center=(400, 215))
             ret_textinho2 = textinho2.get_rect(center=(400, 250))
             ret_textinho3 = textinho3.get_rect(center=(400, 280))
-            
+
+            som_fim.play()
             morreu = True
 
             while morreu:
@@ -313,6 +328,7 @@ while True:
 
         # Tela de Vitória (Modo Curto)
         if modo == 1 and pontos >= 30:
+            som_fim.play()
             tela.fill([255, 255, 255])
             tela.blit(Tela_Creditos.image, Tela_Creditos.rect)
             while pontos >= 30:
