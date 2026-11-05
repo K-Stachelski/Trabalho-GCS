@@ -11,6 +11,12 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 pygame.init()
 
+# Música
+pygame.mixer.init()
+pygame.mixer.music.load('menu.mp3')
+pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.play(-1)
+
 # Reiniciar variáveis do jogo
 def reiniciar():
     global pontos, tam_inicial, x_cobra, y_cobra, lista_cabeca, lista_cobra
