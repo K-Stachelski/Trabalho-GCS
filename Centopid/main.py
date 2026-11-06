@@ -5,25 +5,52 @@ from random import randint
 import os
 import time
 import Bib_Centopid
+from config import (
+    LARGURA_TELA,
+    ALTURA_TELA,
+    FPS,
+    COR_BRANCO,
+    COR_PRETO,
+    COR_SERGIO,
+    COR_CLAUDIO,
+    COR_TEXTO_MENU,
+    COR_TEXTO_HUD,
+    VELOCIDADE_INICIAL,
+    INCREMENTO_VELOCIDADE,
+    TAMANHO_INICIAL,
+    INCREMENTO_TAMANHO,
+    RAIO_CENTOPEIA,
+    PONTUACAO_VITORIA_MODO_CURTO,
+)
 
 # Garante que o diretorio de execucao seja a pasta onde os recursos do jogo estao localizados
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 pygame.init()
 
+# Mapeamento de direcoes opostas para prevencao de auto-colisao imediata (Issue #26)
+DIRECOES_OPOSTAS = {
+    'ESQUERDA': 'DIREITA',
+    'DIREITA': 'ESQUERDA',
+    'CIMA': 'BAIXO',
+    'BAIXO': 'CIMA',
+}
+
 # Reiniciar variáveis do jogo
 def reiniciar():
     global pontos, tam_inicial, x_cobra, y_cobra, lista_cabeca, lista_cobra
-    global velocidade, x_controle, y_controle, morreu
+    global velocidade, x_controle, y_controle, morreu, direcao_atual, proxima_direcao
     pontos = 0
-    tam_inicial = 2
-    x_cobra = int(largura // 2)
-    y_cobra = int(altura // 2)
+    tam_inicial = TAMANHO_INICIAL
+    x_cobra = int(LARGURA_TELA // 2)
+    y_cobra = int(ALTURA_TELA // 2)
     lista_cobra = []
     lista_cabeca = []
-    velocidade = 2.5
+    velocidade = VELOCIDADE_INICIAL
     x_controle = velocidade
     y_controle = 0
+    direcao_atual = 'DIREITA'
+    proxima_direcao = 'DIREITA'
     morreu = False
     food.sortear_posicao()
 # END REINICIAR
@@ -70,8 +97,8 @@ Tela_Modo = Bib_Centopid.Background('imagens/modo.png', [0, 0])
 Tela_Creditos = Bib_Centopid.Background('imagens/creditos.png', [0, 0])
 
 # Tamanho da tela
-largura = 800
-altura = 500
+largura = LARGURA_TELA
+altura = ALTURA_TELA
 
 # Inicializa variáveis locais
 reiniciar()
@@ -91,15 +118,15 @@ modo = 0
 skin = 0
 
 while True:
-    relogio.tick(60)
+    relogio.tick(FPS)
 
     # Tela de inicio
     if inicio == 0:
-        tela.fill([255, 255, 255])
+        tela.fill(COR_BRANCO)
         tela.blit(Tela_Inicial.image, Tela_Inicial.rect)
 
         texto = f'Recorde: {rec0}'
-        recorde = fonte.render(texto, True, (110, 75, 24))
+        recorde = fonte.render(texto, True, COR_TEXTO_MENU)
         tela.blit(recorde, (295, 135))
         cont = 0
         for evento in pygame.event.get():
@@ -114,7 +141,7 @@ while True:
 
     # Tela de seleção de personagem 
     elif inicio == 1:
-        tela.fill([255, 255, 255])
+        tela.fill(COR_BRANCO)
         tela.blit(Tela_Selecao.image, Tela_Selecao.rect)
 
         for evento in pygame.event.get():
@@ -140,7 +167,7 @@ while True:
 
     # Seleção do modo longo/infinito ou curto
     elif inicio == 2:
-        tela.fill([255, 255, 255])
+        tela.fill(COR_BRANCO)
         tela.blit(Tela_Modo.image, Tela_Modo.rect)
 
         for evento in pygame.event.get():
@@ -168,12 +195,12 @@ while True:
 
     # Tela de gameplay do jogo
     elif inicio == 3:
-        tela.fill([255, 255, 255])
+        tela.fill(COR_BRANCO)
         tela.blit(BackGround.image, BackGround.rect)
         grupo_sprites.draw(tela)
 
         if modo == 1:
-            msg = f'Pontos: {pontos}/30'
+            msg = f'Pontos: {pontos}/{PONTUACAO_VITORIA_MODO_CURTO}'
         else:
             msg = f'Pontos: {pontos}'
             
@@ -184,9 +211,9 @@ while True:
         else:
             msg3 = f'Recorde: {rec2}'
 
-        textinho = fonte.render(msg, True, (161, 115, 66))
-        textinho2 = fonte.render(msg2, True, (161, 115, 66))
-        textinho3 = fonte.render(msg3, True, (161, 115, 66))
+        textinho = fonte.render(msg, True, COR_TEXTO_HUD)
+        textinho2 = fonte.render(msg2, True, COR_TEXTO_HUD)
+        textinho3 = fonte.render(msg3, True, COR_TEXTO_HUD)
 
         tela.blit(textinho, (15, 5))
         tela.blit(textinho2, (15, 30))
@@ -197,34 +224,50 @@ while True:
                 pygame.quit()
                 exit()
 
-            # Controle de movimento da centopeia
+            # Controle de movimento da centopeia (Issue #26: previne comandos opostos imediatos)
             if evento.type == KEYDOWN:
-                if (evento.key == K_a or evento.key == K_LEFT) and x_controle != velocidade:
-                    x_controle = -velocidade
-                    y_controle = 0
-                elif (evento.key == K_d or evento.key == K_RIGHT) and x_controle != -velocidade:
-                    x_controle = velocidade
-                    y_controle = 0
-                elif (evento.key == K_w or evento.key == K_UP) and y_controle != velocidade:
-                    y_controle = -velocidade
-                    x_controle = 0
-                elif (evento.key == K_s or evento.key == K_DOWN) and y_controle != -velocidade:
-                    y_controle = velocidade
-                    x_controle = 0
+                nova_dir = None
+                if evento.key == K_a or evento.key == K_LEFT:
+                    nova_dir = 'ESQUERDA'
+                elif evento.key == K_d or evento.key == K_RIGHT:
+                    nova_dir = 'DIREITA'
+                elif evento.key == K_w or evento.key == K_UP:
+                    nova_dir = 'CIMA'
+                elif evento.key == K_s or evento.key == K_DOWN:
+                    nova_dir = 'BAIXO'
+
+                if nova_dir is not None:
+                    # Ignora comando se for exatamente oposto a direcao atual ou a proxima direcao ja agendada no mesmo frame
+                    if DIRECOES_OPOSTAS.get(nova_dir) != direcao_atual and DIRECOES_OPOSTAS.get(nova_dir) != proxima_direcao:
+                        proxima_direcao = nova_dir
+
+        direcao_atual = proxima_direcao
+        if direcao_atual == 'ESQUERDA':
+            x_controle = -velocidade
+            y_controle = 0
+        elif direcao_atual == 'DIREITA':
+            x_controle = velocidade
+            y_controle = 0
+        elif direcao_atual == 'CIMA':
+            x_controle = 0
+            y_controle = -velocidade
+        elif direcao_atual == 'BAIXO':
+            x_controle = 0
+            y_controle = velocidade
 
         x_cobra += x_controle
         y_cobra += y_controle
 
         if skin == 0:
-            cobrinha = pygame.draw.circle(tela, (44, 44, 44), (int(x_cobra), int(y_cobra)), 15)
+            cobrinha = pygame.draw.circle(tela, COR_SERGIO, (int(x_cobra), int(y_cobra)), RAIO_CENTOPEIA)
         else:
-            cobrinha = pygame.draw.circle(tela, (126, 20, 186), (int(x_cobra), int(y_cobra)), 15)
+            cobrinha = pygame.draw.circle(tela, COR_CLAUDIO, (int(x_cobra), int(y_cobra)), RAIO_CENTOPEIA)
 
         # Paredes
-        t_teto = pygame.draw.rect(tela, (0, 0, 0), (0, 0, 800, 1))
-        t_chao = pygame.draw.rect(tela, (0, 0, 0), (0, 499, 800, 30))
-        parede_esquerda = pygame.draw.rect(tela, (0, 0, 0), (0, 0, 2, 500))
-        parede_direita = pygame.draw.rect(tela, (0, 0, 0), (799, 0, 30, 500))
+        t_teto = pygame.draw.rect(tela, COR_PRETO, (0, 0, LARGURA_TELA, 1))
+        t_chao = pygame.draw.rect(tela, COR_PRETO, (0, ALTURA_TELA - 1, LARGURA_TELA, 30))
+        parede_esquerda = pygame.draw.rect(tela, COR_PRETO, (0, 0, 2, ALTURA_TELA))
+        parede_direita = pygame.draw.rect(tela, COR_PRETO, (LARGURA_TELA - 1, 0, 30, ALTURA_TELA))
 
         # Colisão com a comidinha
         if cobrinha.colliderect(food.rect):
@@ -242,10 +285,10 @@ while True:
             if novo_recorde:
                 Bib_Centopid.salvar_recordes({'rec0': rec0, 'rec': rec, 'rec2': rec2})
 
-            if not (modo == 1 and pontos >= 30):
+            if not (modo == 1 and pontos >= PONTUACAO_VITORIA_MODO_CURTO):
                 food.sortear_posicao()
-                tam_inicial += 2
-                velocidade += 0.2
+                tam_inicial += INCREMENTO_TAMANHO
+                velocidade += INCREMENTO_VELOCIDADE
 
         # Atualiza rastro da cobra
         lista_cabeca = [x_cobra, y_cobra]
@@ -267,9 +310,9 @@ while True:
             msg2 = "Pressione a tecla 'R' para reiniciar o jogo"
             msg3 = "ou pressione a tecla 'E' para voltar a tela inicial"
             
-            textinho = fonte3.render(msg, True, (255, 255, 255))
-            textinho2 = fonte2.render(msg2, True, (255, 255, 255))
-            textinho3 = fonte2.render(msg3, True, (255, 255, 255))
+            textinho = fonte3.render(msg, True, COR_BRANCO)
+            textinho2 = fonte2.render(msg2, True, COR_BRANCO)
+            textinho3 = fonte2.render(msg3, True, COR_BRANCO)
             
             ret_textinho = textinho.get_rect(center=(400, 215))
             ret_textinho2 = textinho2.get_rect(center=(400, 250))
@@ -278,7 +321,7 @@ while True:
             morreu = True
 
             while morreu:
-                tela.fill((0, 0, 0))
+                tela.fill(COR_PRETO)
                 for evento in pygame.event.get():
                     if evento.type == QUIT:
                         pygame.quit()
@@ -306,10 +349,10 @@ while True:
             Bib_Centopid.aumenta_cobra2(lista_cobra)
 
         # Tela de Vitória (Modo Curto)
-        if modo == 1 and pontos >= 30:
-            tela.fill([255, 255, 255])
+        if modo == 1 and pontos >= PONTUACAO_VITORIA_MODO_CURTO:
+            tela.fill(COR_BRANCO)
             tela.blit(Tela_Creditos.image, Tela_Creditos.rect)
-            while pontos >= 30:
+            while pontos >= PONTUACAO_VITORIA_MODO_CURTO:
                 for evento in pygame.event.get():
                     if evento.type == QUIT:
                         pygame.quit()
