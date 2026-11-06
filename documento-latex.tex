@@ -1,51 +1,74 @@
-\documentclass[12pt]{article}
+\documentclass[12pt,a4paper]{article}
 
-\usepackage{sbc-template}
-\usepackage{graphicx,url}
+\usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[brazil]{babel}
-\usepackage{float} % PACOTE ADICIONADO PARA FIXAR AS IMAGENS COM [H]
+\usepackage{graphicx,url}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
 
 \sloppy
 
-\title{Trabalho da Disciplina Gerencia de Configuração de Software}
+\title{\textbf{Trabalho da Disciplina Gerência de Configuração de Software}}
 
-\author{Kimberlly L. Stachelski Canhete\inst{1}, Rafaela Santos S. Orrico\inst{2}, Aluno(a)\inst{3}, Aluno(a)\inst{4}, Aluno(a)\inst{5}}
+\author{
+  Kimberlly L. Stachelski Canhete\inst{1}, 
+  Rafaela Santos S. Orrico\inst{1}, 
+  Murilo Barbiere\inst{1}, 
+  Othon\inst{1}, 
+  Tuanny Cristine França e Costa\inst{1}
+}
 
+\providecommand{\inst}[1]{\unskip$^{#1}$}
+\providecommand{\email}[1]{\texttt{#1}}
 
-\address{Faculdade de Computação -- Universidade Federal de Mato Grosso do Sul (UFMS)\\
-  79070-900 -- Campo Grande -- MS -- Brasil
-  \email{\{kimberlly.stachelski, rafaela.orrico, passaporte.ufms\}@ufms.br}
+\newcommand{\affil}{
+  \begin{center}
+    \small
+    Faculdade de Computação -- Universidade Federal de Mato Grosso do Sul (UFMS)\\
+    79070-900 -- Campo Grande -- MS -- Brasil\\
+    \email{\{kimberlly.stachelski, rafaela.orrico, murilo.barbiere, tuanny.costa\}@ufms.br}
+  \end{center}
 }
 
 \begin{document}
 
 \maketitle
+\affil
+\vspace{1em}
 
 \begin{abstract}
     This article addresses the Software Configuration Management project, utilizing Git as its primary tool.
 \end{abstract}
 
 \begin{resumo}
-  Este artigo aborda o trabalho de Gerência de Configuração de Software, utilizando o Git como ferramenta principal
+  Este artigo aborda o trabalho de Gerência de Configuração de Software, utilizando o Git como ferramenta principal.
 \end{resumo}
 
 \section{Introdução}
-Este artigo mostrará como foi feito o trabalho da disciplina Gerencia de Configuração de Software, a ideia é mostrar o passo a passo e o que cada integrante do grupo contribuiu.
+Este artigo mostrará como foi feito o trabalho da disciplina Gerência de Configuração de Software, a ideia é mostrar o passo a passo e o que cada integrante do grupo contribuiu.
 
 \section{Integrantes}
-Esta seção mostrará se os integrantes entregaram o que foi solicitado pela docente da disciplina, assim como se foi feito tudo ou parcialmente e quais partes foi concluida com sucesso, a ideia geral desta seção é mostrar como cada integrante participou da realização do trabalho.
+Esta seção mostrará se os integrantes entregaram o que foi solicitado pela docente da disciplina, assim como se foi feito tudo ou parcialmente e quais partes foram concluídas com sucesso, a ideia geral desta seção é mostrar como cada integrante participou da realização do trabalho.
 
 \subsection{Equipe}
 \begin{enumerate}
     \item {Modelo Prioridade ou Modelo Severidade}
-    \\\texttt{R: A escolha da equipe se deu pelo modelo de prioriodade devido a maior facilidade da classificação e o mesmo ser de facil entedimento.}
+    \\\texttt{R: A escolha da equipe se deu pelo modelo de prioridade devido à maior facilidade da classificação e o mesmo ser de fácil entendimento.}
     
     \item {Modelo de Ramificação}
-    \\ \texttt{R:}
+    \\ \texttt{R: GitHub Flow.}
     
-    \item {Padrão Semantico}
-    \\ \texttt{R:}
+    \item {Padrão Semântico}
+    \\ \texttt{R: Conventional Commits v1.0.0.}
 \end{enumerate}
 
 \subsection{Kimberlly L. Stachelski Canhete}
@@ -53,7 +76,7 @@ Esta seção mostrará se os integrantes entregaram o que foi solicitado pela do
     \begin{enumerate}
         \item {[x] Criar seis issues;}
         \item {[x] Reagir e comentar uma issue cadastrada por outra pessoa da equipe. O comentário deve conter informação útil para a possível solução da issue;}
-        \item {[x] Revisar uma issue em status "closed"\ de outra pessoa;}
+        \item {[x] Revisar uma issue em status ``closed'' de outra pessoa;}
         \item {[x] Registrar como comentário na issue revisada, os ajustes que precisam ser feitos.}
     \end{enumerate}
 
@@ -71,7 +94,7 @@ Esta seção mostrará se os integrantes entregaram o que foi solicitado pela do
         \begin{enumerate}
             \item {[x] Criar seis issues;}
             \item {[x] Reagir e comentar uma issue cadastrada por outra pessoa da equipe. O comentário deve conter informação útil para a possível solução da issue;}
-            \item {[x] Revisar uma issue em status "closed"\ de outra pessoa;}
+            \item {[x] Revisar uma issue em status ``closed'' de outra pessoa;}
             \item {[ ] Registrar como comentário na issue revisada, os ajustes que precisam ser feitos.}
         \end{enumerate}
     
@@ -83,14 +106,31 @@ Esta seção mostrará se os integrantes entregaram o que foi solicitado pela do
             \item {[ ] Realizar uma alteração que resolva duas issues cadastradas por outro membro;}
             \item {[ ] Resolver, pelo menos, dois conflitos de merge.}
         \end{enumerate}
+
 \subsection{Othon}
+    \subsubsection{Gerenciamento de Mudanças}
+        \begin{enumerate}
+            \item {[ ] Criar seis issues;}
+            \item {[ ] Reagir e comentar uma issue cadastrada por outra pessoa da equipe;}
+            \item {[ ] Revisar uma issue em status ``closed'' de outra pessoa;}
+            \item {[ ] Registrar comentário de ajustes na issue revisada.}
+        \end{enumerate}
+    
+    \subsubsection{Controle de Versões}
+        \begin{enumerate}
+            \item {[ ] Criar um arquivo dentro do projeto;}
+            \item {[ ] Alterar um arquivo dentro do projeto;}
+            \item {[ ] Revisar e aprovar um pull-request;}
+            \item {[ ] Realizar uma alteração que resolva duas issues de outro membro;}
+            \item {[ ] Resolver, pelo menos, dois conflitos de merge.}
+        \end{enumerate}
 
 \subsection{Rafaela Santos S. Orrico}
 \subsubsection{Gerenciamento de Mudanças}
     \begin{enumerate}
         \item {[x] Criar seis issues;}
         \item {[x] Reagir e comentar uma issue cadastrada por outra pessoa da equipe. O comentário deve conter informação útil para a possível solução da issue;}
-        \item {[x] Revisar uma issue em status "closed"\ de outra pessoa;}
+        \item {[x] Revisar uma issue em status ``closed'' de outra pessoa;}
         \item {[x] Registrar como comentário na issue revisada, os ajustes que precisam ser feitos.}
     \end{enumerate}
     
@@ -98,14 +138,34 @@ Esta seção mostrará se os integrantes entregaram o que foi solicitado pela do
     \begin{enumerate}
         \item {[x] Criar um arquivo dentro do projeto;}
         \item {[x] Alterar um arquivo dentro do projeto;}
-        \item {[x] Revisar e aprovar um pull-request}
+        \item {[x] Revisar e aprovar um pull-request;}
         \item {[ ] Realizar uma alteração que resolva duas issues cadastradas por outro membro;}
         \item {[ ] Resolver, pelo menos, dois conflitos de merge.}
     \end{enumerate}
 
-\subsection{Tuanny}
+\subsection{Tuanny Cristine França e Costa}
+\subsubsection{Gerenciamento de Mudanças}
+    \begin{enumerate}
+        \item {[x] Criar seis issues seguindo o modelo de prioridades adotado;}
+        \item {[x] Reagir e comentar uma issue aberta de outro integrante com foco em solução técnica (Issue \#14 - Sistema de Pausa);}
+        \item {[x] Revisar uma issue em status ``closed'' de outro integrante (Issue \#16 - Persistência de Recordes);}
+        \item {[x] Registrar comentário com apontamentos e melhorias técnicas na issue revisada (revisão dupla na Issue \#16).}
+    \end{enumerate}
+
+\subsubsection{Controle de Versões}
+    \begin{enumerate}
+        \item {[x] Criar um arquivo dentro do projeto (\texttt{Centopid/elementos\_jogo.py});}
+        \item {[x] Alterar um arquivo dentro do projeto (\texttt{Centopid/main.py} e \texttt{documento-latex.tex});}
+        \item {[ ] Revisar e aprovar um pull-request de outro membro da equipe;}
+        \item {[x] Realizar alteração que resolva duas issues de outro integrante (Issues \#2 e \#3 tratadas via Conventional Commit);}
+        \item {[ ] Resolver, pelo menos, dois conflitos de merge com documentação comprobatória.}
+    \end{enumerate}
 
 \section{Evidências}
-Esta seção terá as evidencias feita nesse trabalho, usando o git log.
+Esta seção terá as evidências feitas neste trabalho, usando o git log.
+
+\begin{verbatim}
+git log --graph --oneline --decorate --all
+\end{verbatim}
 
 \end{document}
