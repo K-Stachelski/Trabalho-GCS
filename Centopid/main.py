@@ -211,13 +211,20 @@ while True:
         else:
             msg3 = f'Recorde: {rec2}'
 
+        msg_modo = f'Modo: {"Curto" if modo == 1 else "Infinito"}'
+        msg_fps = f'FPS: {FPS}'
+
         textinho = fonte.render(msg, True, COR_TEXTO_HUD)
         textinho2 = fonte.render(msg2, True, COR_TEXTO_HUD)
         textinho3 = fonte.render(msg3, True, COR_TEXTO_HUD)
+        textinho_modo = fonte.render(msg_modo, True, COR_TEXTO_HUD)
+        textinho_fps = fonte.render(msg_fps, True, COR_TEXTO_HUD)
 
         tela.blit(textinho, (15, 5))
         tela.blit(textinho2, (15, 30))
         tela.blit(textinho3, (15, 55))
+        tela.blit(textinho_modo, (15, 80))
+        tela.blit(textinho_fps, (15, 105))
 
         for evento in pygame.event.get():
             if evento.type == QUIT:
