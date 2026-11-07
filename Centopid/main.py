@@ -5,16 +5,32 @@ from random import randint
 import os
 import time
 import Bib_Centopid
+import elementos_jogo
 
 # Garante que o diretorio de execucao seja a pasta onde os recursos do jogo estao localizados
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 pygame.init()
 
+# Tamanho da tela
+largura = 800
+altura = 500
+
+# Comida e Elementos Dinamicos
+food = Bib_Centopid.Food(randint(120, 650), randint(120, 450))
+comida_especial = elementos_jogo.ComidaEspecial(largura, altura)
+inimigo = elementos_jogo.Inimigo(largura, altura)
+
+grupo_sprites = pygame.sprite.Group()
+grupo_sprites.add(food)
+
 # Reiniciar variáveis do jogo
 def reiniciar():
     global pontos, tam_inicial, x_cobra, y_cobra, lista_cabeca, lista_cobra
+ feature/contribuicoes-tuanny
     global velocidade, x_controle, y_controle, morreu, pausado
+    global comida_especial, inimigo
+main
     pontos = 0
     tam_inicial = 2
     x_cobra = int(largura // 2)
@@ -27,6 +43,8 @@ def reiniciar():
     morreu = False
     pausado = False
     food.sortear_posicao()
+    comida_especial.sortear_posicao()
+    inimigo.sortear_posicao()
 # END REINICIAR
 
 # Botoes
@@ -58,21 +76,12 @@ button_surface3 = pygame.image.load("imagens/casa.png")
 button_surface3 = pygame.transform.scale(button_surface3, (121, 122))
 button3 = Bib_Centopid.Button(button_surface3, 81, 413)
 
-# Comida
-food = Bib_Centopid.Food(randint(120, 650), randint(120, 450))
-grupo_sprites = pygame.sprite.Group()
-grupo_sprites.add(food)
-
 # Carregar imagens de fundo
 BackGround = Bib_Centopid.Background('imagens/background.png', [0, 0])
 Tela_Inicial = Bib_Centopid.Background('imagens/inicio.png', [0, 0])
 Tela_Selecao = Bib_Centopid.Background('imagens/selecao.png', [0, 0])
 Tela_Modo = Bib_Centopid.Background('imagens/modo.png', [0, 0])
 Tela_Creditos = Bib_Centopid.Background('imagens/creditos.png', [0, 0])
-
-# Tamanho da tela
-largura = 800
-altura = 500
 
 # Inicializa variáveis locais
 reiniciar()
@@ -182,6 +191,12 @@ while True:
         tela.blit(BackGround.image, BackGround.rect)
         grupo_sprites.draw(tela)
 
+        # Desenha os novos elementos (Issues #2 e #3)
+        if comida_especial.ativa:
+            tela.blit(comida_especial.image, comida_especial.rect)
+        if inimigo.ativo:
+            tela.blit(inimigo.image, inimigo.rect)
+
         if modo == 1:
             msg = f'Pontos: {pontos}/30'
         else:
@@ -269,7 +284,7 @@ while True:
         parede_esquerda = pygame.draw.rect(tela, (0, 0, 0), (0, 0, 2, 500))
         parede_direita = pygame.draw.rect(tela, (0, 0, 0), (799, 0, 30, 500))
 
-        # Colisão com a comidinha
+        # Colisão com a comidinha padrão
         if cobrinha.colliderect(food.rect):
             pontos += 1
             novo_recorde = False
@@ -287,8 +302,30 @@ while True:
 
             if not (modo == 1 and pontos >= 30):
                 food.sortear_posicao()
+                comida_especial.sortear_posicao()
+                inimigo.sortear_posicao()
                 tam_inicial += 2
                 velocidade += 0.2
+
+        # Colisão com a comida especial (Issue #3)
+        if comida_especial.ativa and cobrinha.colliderect(comida_especial.rect):
+            pontos += 3
+            novo_recorde = False
+            if modo == 1 and pontos > rec:
+                rec = pontos
+                rec0 = max(rec0, rec)
+                novo_recorde = True
+            elif modo == 2 and pontos > rec2:
+                rec2 = pontos
+                rec0 = max(rec0, rec2)
+                novo_recorde = True
+
+            if novo_recorde:
+                Bib_Centopid.salvar_recordes({'rec0': rec0, 'rec': rec, 'rec2': rec2})
+
+            comida_especial.sortear_posicao()
+            inimigo.sortear_posicao()
+            tam_inicial += 3
 
         # Atualiza rastro da cobra
         lista_cabeca = [x_cobra, y_cobra]
@@ -300,8 +337,11 @@ while True:
         # Checa se a cabeça da centopeia colidiu com o corpo dela mesma
         auto_colisao = lista_cabeca in lista_cobra[:-1]
 
+        # Checa colisão com o inimigo (Issue #2)
+        colisao_inimigo = inimigo.ativo and cobrinha.colliderect(inimigo.rect)
+
         # Checagem de Game Over
-        if auto_colisao or cobrinha.colliderect(t_teto) or cobrinha.colliderect(t_chao) or cobrinha.colliderect(parede_direita) or cobrinha.colliderect(parede_esquerda):
+        if auto_colisao or colisao_inimigo or cobrinha.colliderect(t_teto) or cobrinha.colliderect(t_chao) or cobrinha.colliderect(parede_direita) or cobrinha.colliderect(parede_esquerda):
             time.sleep(0.3)
             fonte2 = pygame.font.SysFont('Comic Sans', 25, True, False)
             fonte3 = pygame.font.SysFont('Comic Sans', 50, True, False)
