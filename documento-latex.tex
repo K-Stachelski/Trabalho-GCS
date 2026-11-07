@@ -91,7 +91,6 @@ Esta seção mostrará se os integrantes entregaram o que foi solicitado pela do
         \item {[x] Criar seis issues;}
         \item {[x] Reagir e comentar uma issue cadastrada por outra pessoa da equipe. O comentário deve conter informação útil para a possível solução da issue;}
         \item {[x] Revisar uma issue em status "closed"\ de outra pessoa;}
-        \item {[X] Registrar como comentário na issue revisada, os ajustes que precisam ser feitos.}
         \item {[x] Registrar como comentário na issue revisada, os ajustes que precisam ser feitos.}
     \end{enumerate}
     
@@ -108,6 +107,72 @@ Esta seção mostrará se os integrantes entregaram o que foi solicitado pela do
 
 \section{Evidências}
 Esta seção apresenta as evidências das atividades realizadas pelos integrantes, utilizando o histórico de commits do Git e registros do desenvolvimento.
+
+\subsection{Rafaela Santos S. Orrico}
+
+\subsubsection{Implementação de duas issues}
+
+Foi realizada a implementação de alterações no jogo Centopid para atender às issues \#3 e \#5, relacionadas à inclusão de diferentes tipos de comidas e efeitos sonoros. As alterações foram registradas na branch \texttt{feature/rafaela-comidas-e-sons}, por meio dos commits:
+
+\begin{itemize}
+    \item \texttt{c252b95}: restaura música de fundo do jogo;
+    \item \texttt{8079b69}: adiciona comidas diferentes e sons ao jogo.
+\end{itemize}
+
+\subsubsection{Classificação das issues por prioridade}
+
+Foram criadas e aplicadas etiquetas no GitHub para identificar os níveis de prioridade das Issues, conforme o modelo adotado pela equipe. Essa classificação permite visualizar a urgência de cada atividade e facilita a organização das tarefas durante o desenvolvimento do projeto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Centopid/imagens/evidencias/Print Etiquetas Issue.png}
+    \caption{Etiquetas de prioridade aplicadas às Issues no GitHub.}
+    \label{fig:etiquetas-issues}
+\end{figure}
+
+\subsubsection{Resolução de conflitos de merge}
+
+Para atender ao requisito de resolver pelo menos dois conflitos de merge, foram realizados dois testes utilizando branches diferentes. Em ambos os casos, duas branches modificaram a mesma linha de um arquivo, fazendo com que o Git identificasse conflitos de conteúdo durante a tentativa de merge.
+
+\paragraph{Primeiro conflito}
+
+O primeiro conflito ocorreu entre as branches \texttt{conflito-1-a} e \texttt{conflito-1-b}, que modificaram a mesma linha do arquivo \texttt{registro-conflitos.txt}. Ao executar o comando \texttt{git merge conflito-1-a}, o Git identificou um conflito de conteúdo e interrompeu o merge automático.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Centopid/imagens/evidencias/Conflito 1.png}
+    \caption{Identificação do primeiro conflito de merge pelo Git.}
+    \label{fig:conflito1-terminal}
+\end{figure}
+
+A resolução foi realizada manualmente, preservando as informações das duas versões no arquivo final e removendo as marcações de conflito inseridas pelo Git. O resultado foi registrado no commit \texttt{49d6288}, com a mensagem \texttt{merge: resolve primeiro conflito de merge}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Centopid/imagens/evidencias/Conflito 2.png}
+    \caption{Commit de resolução do primeiro conflito de merge.}
+    \label{fig:conflito1-resolucao}
+\end{figure}
+
+\paragraph{Segundo conflito}
+
+O segundo conflito ocorreu entre as branches \texttt{conflito-2-a} e \texttt{conflito-2-b}, que modificaram a mesma linha do arquivo \texttt{registro-segundo-conflito.txt}. Ao executar o comando \texttt{git merge conflito-2-a}, o Git também identificou um conflito de conteúdo e interrompeu o merge automático.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Centopid/imagens/evidencias/Print 2 Conflito .png}
+    \caption{Identificação do segundo conflito de merge pelo Git.}
+    \label{fig:conflito2-terminal}
+\end{figure}
+
+O conflito foi resolvido manualmente, mantendo as duas informações no arquivo final e removendo as marcações de conflito. A resolução foi registrada no commit \texttt{9b48b70}, com a mensagem \texttt{merge: resolve segundo conflito de merge}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Centopid/imagens/evidencias/Print Conflito 2.png}
+    \caption{Commit de resolução do segundo conflito de merge.}
+    \label{fig:conflito2-resolucao}
+\end{figure}
 
 \subsection{Murilo Barbiere}
 
