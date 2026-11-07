@@ -1,4 +1,5 @@
 import pygame
+import random
 from random import randint
 import os
 import json

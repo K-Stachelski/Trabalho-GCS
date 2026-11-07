@@ -7,12 +7,18 @@ import unittest
 import os
 import sys
 
+# Garante suporte a execucao em ambientes headless (CI/CD / terminal)
+os.environ.setdefault('SDL_VIDEODRIVER', 'dummy')
+os.environ.setdefault('SDL_AUDIODRIVER', 'dummy')
+
 # Adiciona o diretorio Centopid ao sys.path para importacao
 CENTOPID_DIR = os.path.dirname(os.path.abspath(__file__))
 if CENTOPID_DIR not in sys.path:
     sys.path.insert(0, CENTOPID_DIR)
+os.chdir(CENTOPID_DIR)
 
 import config
+import Bib_Centopid
 
 
 class TestConfiguracao(unittest.TestCase):
@@ -107,6 +113,27 @@ class TestPrevencaoAutoColisao(unittest.TestCase):
         self.assertEqual(proxima_direcao, 'CIMA')
         proxima_direcao = self.processar_comando(direcao_atual, proxima_direcao, 'BAIXO')
         self.assertEqual(proxima_direcao, 'CIMA', "Comando oposto a proxima_direcao agendada deve ser rejeitado")
+
+
+class TestComida(unittest.TestCase):
+    """Testes para validar o instanciamento e sorteio da comida (Food)."""
+
+    def setUp(self):
+        self.food = Bib_Centopid.Food(100, 100)
+
+    def test_instanciacao_comida(self):
+        """Verifica se a comida e instanciada com posicao, rect e tipo valido."""
+        self.assertIsNotNone(self.food.rect)
+        self.assertEqual(self.food.rect.topleft, (100, 100))
+        self.assertIn(self.food.tipo, ['normal', 'especial', 'bonus'])
+        self.assertIn(self.food.pontos, [1, 3, 5])
+
+    def test_sortear_posicao(self):
+        """Verifica se sortear_posicao reposiciona a comida dentro dos limites da tela."""
+        self.food.sortear_posicao()
+        self.assertTrue(0 <= self.food.rect.x <= config.LARGURA_TELA - self.food.rect.width)
+        self.assertTrue(0 <= self.food.rect.y <= config.ALTURA_TELA - self.food.rect.height)
+        self.assertIn(self.food.tipo, ['normal', 'especial', 'bonus'])
 
 
 if __name__ == '__main__':
