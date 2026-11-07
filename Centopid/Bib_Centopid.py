@@ -2,9 +2,16 @@ import pygame
 from random import randint
 import os
 import json
+from config import (
+    LARGURA_TELA,
+    ALTURA_TELA,
+    COR_SERGIO,
+    COR_CLAUDIO,
+    RAIO_CENTOPEIA,
+)
 
-largura = 800
-altura = 500
+largura = LARGURA_TELA
+altura = ALTURA_TELA
 
 tela = pygame.display.set_mode((largura, altura))
 
@@ -105,8 +112,8 @@ def carregar_arquivos():
 
 def aumenta_cobra(lista_cobra):
     for xy in lista_cobra:
-        pygame.draw.circle(tela, (44, 44, 44), (int(xy[0]), int(xy[1])), 15) # skin Sérgio
+        pygame.draw.circle(tela, COR_SERGIO, (int(xy[0]), int(xy[1])), RAIO_CENTOPEIA) # skin Sérgio
 
 def aumenta_cobra2(lista_cobra):
     for xy in lista_cobra:
-        pygame.draw.circle(tela, (126, 20, 186), (int(xy[0]), int(xy[1])), 15) # skin Cláudio
+        pygame.draw.circle(tela, COR_CLAUDIO, (int(xy[0]), int(xy[1])), RAIO_CENTOPEIA) # skin Cláudio
