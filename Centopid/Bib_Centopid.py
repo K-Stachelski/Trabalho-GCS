@@ -77,19 +77,57 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location
 
 # Sprite Comidinha
+
+
 class Food(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.sprites = []
-        self.sprites.append(pygame.image.load('imagens/comida.png'))
-        self.atual = 0
-        self.image = self.sprites[self.atual]
-        self.rect = self.image.get_rect()
+
+        self.tipos = {
+            "normal": {
+                "pontos": 1,
+                "crescimento": 2,
+                "cor": (0, 255, 0)
+            },
+            "especial": {
+                "pontos": 3,
+                "crescimento": 4,
+                "cor": (255, 255, 0)
+            },
+            "bonus": {
+                "pontos": 5,
+                "crescimento": 0,
+                "cor": (180, 0, 255)
+            }
+        }
+
+        self.imagem_original = pygame.image.load('imagens/comida.png').convert_alpha()
+
+        self.rect = self.imagem_original.get_rect()
         self.rect.topleft = (x, y)
+
+        self.sorteia_tipo()
+
+    def sorteia_tipo(self):
+        self.tipo = random.choices(
+            ["normal", "especial", "bonus"],
+            weights=[60, 25, 15],
+            k=1
+        )[0]
+
+        dados = self.tipos[self.tipo]
+        self.pontos = dados["pontos"]
+        self.crescimento = dados["crescimento"]
+
+        self.image = self.imagem_original.copy()
+        self.image.fill(dados["cor"], special_flags=pygame.BLEND_RGBA_MULT)
 
     def sortear_posicao(self):
         self.rect.x = randint(0, largura - self.rect.width)
         self.rect.y = randint(0, altura - self.rect.height)
+        self.sorteia_tipo()
+
+
 
 # Cria botoes
 class Button():
