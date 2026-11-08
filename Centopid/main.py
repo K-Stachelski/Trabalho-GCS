@@ -36,10 +36,10 @@ DIRECOES_OPOSTAS = {
     'BAIXO': 'CIMA',
 }
 
-# Reiniciar variáveis do jogo
+# Reiniciar variáveis do jogo (incluindo o estado de pausa)
 def reiniciar():
     global pontos, tam_inicial, x_cobra, y_cobra, lista_cabeca, lista_cobra
-    global velocidade, x_controle, y_controle, morreu, direcao_atual, proxima_direcao
+    global velocidade, x_controle, y_controle, morreu, pausado, direcao_atual, proxima_direcao
     pontos = 0
     tam_inicial = TAMANHO_INICIAL
     x_cobra = int(LARGURA_TELA // 2)
@@ -52,7 +52,10 @@ def reiniciar():
     direcao_atual = 'DIREITA'
     proxima_direcao = 'DIREITA'
     morreu = False
+    pausado = False
     food.sortear_posicao()
+    comida_especial.sortear_posicao()
+    inimigo.sortear_posicao()
 # END REINICIAR
 
 # Botoes
@@ -84,11 +87,6 @@ button_surface3 = pygame.image.load("imagens/casa.png")
 button_surface3 = pygame.transform.scale(button_surface3, (121, 122))
 button3 = Bib_Centopid.Button(button_surface3, 81, 413)
 
-# Comida
-food = Bib_Centopid.Food(randint(120, 650), randint(120, 450))
-grupo_sprites = pygame.sprite.Group()
-grupo_sprites.add(food)
-
 # Carregar imagens de fundo
 BackGround = Bib_Centopid.Background('imagens/background.png', [0, 0])
 Tela_Inicial = Bib_Centopid.Background('imagens/inicio.png', [0, 0])
@@ -99,6 +97,14 @@ Tela_Creditos = Bib_Centopid.Background('imagens/creditos.png', [0, 0])
 # Tamanho da tela
 largura = LARGURA_TELA
 altura = ALTURA_TELA
+
+# Comida e Elementos Dinamicos
+food = Bib_Centopid.Food(randint(120, 650), randint(120, 450))
+comida_especial = Bib_Centopid.ComidaEspecial(largura, altura)
+inimigo = Bib_Centopid.Inimigo(largura, altura)
+
+grupo_sprites = pygame.sprite.Group()
+grupo_sprites.add(food)
 
 # Inicializa variáveis locais
 reiniciar()
@@ -199,6 +205,12 @@ while True:
         tela.blit(BackGround.image, BackGround.rect)
         grupo_sprites.draw(tela)
 
+        # Desenha os novos elementos (Issues #2 e #3)
+        if comida_especial.ativa:
+            tela.blit(comida_especial.image, comida_especial.rect)
+        if inimigo.ativo:
+            tela.blit(inimigo.image, inimigo.rect)
+
         if modo == 1:
             msg = f'Pontos: {pontos}/{PONTUACAO_VITORIA_MODO_CURTO}'
         else:
@@ -231,22 +243,34 @@ while True:
                 pygame.quit()
                 exit()
 
-            # Controle de movimento da centopeia (Issue #26: previne comandos opostos imediatos)
             if evento.type == KEYDOWN:
-                nova_dir = None
-                if evento.key == K_a or evento.key == K_LEFT:
-                    nova_dir = 'ESQUERDA'
-                elif evento.key == K_d or evento.key == K_RIGHT:
-                    nova_dir = 'DIREITA'
-                elif evento.key == K_w or evento.key == K_UP:
-                    nova_dir = 'CIMA'
-                elif evento.key == K_s or evento.key == K_DOWN:
-                    nova_dir = 'BAIXO'
+                # Tecla P para pausar/despausar o jogo
+                if evento.key == K_p:
+                    pausado = not pausado
 
-                if nova_dir is not None:
-                    # Ignora comando se for exatamente oposto a direcao atual ou a proxima direcao ja agendada no mesmo frame
-                    if DIRECOES_OPOSTAS.get(nova_dir) != direcao_atual and DIRECOES_OPOSTAS.get(nova_dir) != proxima_direcao:
-                        proxima_direcao = nova_dir
+                # Controle de movimento da centopeia (só processa se não estiver pausado)
+                if not pausado:
+                    nova_dir = None
+                    if evento.key == K_a or evento.key == K_LEFT:
+                        nova_dir = 'ESQUERDA'
+                    elif evento.key == K_d or evento.key == K_RIGHT:
+                        nova_dir = 'DIREITA'
+                    elif evento.key == K_w or evento.key == K_UP:
+                        nova_dir = 'CIMA'
+                    elif evento.key == K_s or evento.key == K_DOWN:
+                        nova_dir = 'BAIXO'
+
+                    if nova_dir is not None:
+                        if DIRECOES_OPOSTAS.get(nova_dir) != direcao_atual and DIRECOES_OPOSTAS.get(nova_dir) != proxima_direcao:
+                            proxima_direcao = nova_dir
+
+        # Se o jogo estiver pausado, exibe a mensagem de pausa e congela as atualizações lógicas
+        if pausado:
+            msg_pausa = fonte.render("JOGO PAUSADO - Pressione 'P' para continuar", True, COR_PRETO)
+            ret_pausa = msg_pausa.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+            tela.blit(msg_pausa, ret_pausa)
+            pygame.display.flip()
+            continue
 
         direcao_atual = proxima_direcao
         if direcao_atual == 'ESQUERDA':
@@ -276,7 +300,7 @@ while True:
         parede_esquerda = pygame.draw.rect(tela, COR_PRETO, (0, 0, 2, ALTURA_TELA))
         parede_direita = pygame.draw.rect(tela, COR_PRETO, (LARGURA_TELA - 1, 0, 30, ALTURA_TELA))
 
-        # Colisão com a comidinha
+        # Colisão com a comidinha padrão
         if cobrinha.colliderect(food.rect):
             pontos += 1
             novo_recorde = False
@@ -297,6 +321,26 @@ while True:
                 tam_inicial += INCREMENTO_TAMANHO
                 velocidade += INCREMENTO_VELOCIDADE
 
+        # Colisão com a comida especial (Issue #3)
+        if comida_especial.ativa and cobrinha.colliderect(comida_especial.rect):
+            pontos += 3
+            novo_recorde = False
+            if modo == 1 and pontos > rec:
+                rec = pontos
+                rec0 = max(rec0, rec)
+                novo_recorde = True
+            elif modo == 2 and pontos > rec2:
+                rec2 = pontos
+                rec0 = max(rec0, rec2)
+                novo_recorde = True
+
+            if novo_recorde:
+                Bib_Centopid.salvar_recordes({'rec0': rec0, 'rec': rec, 'rec2': rec2})
+
+            comida_especial.sortear_posicao()
+            inimigo.sortear_posicao()
+            tam_inicial += 3
+
         # Atualiza rastro da cobra
         lista_cabeca = [x_cobra, y_cobra]
         lista_cobra.append(lista_cabeca)
@@ -307,8 +351,11 @@ while True:
         # Checa se a cabeça da centopeia colidiu com o corpo dela mesma
         auto_colisao = lista_cabeca in lista_cobra[:-1]
 
+        # Checa colisão com o inimigo (Issue #2)
+        colisao_inimigo = inimigo.ativo and cobrinha.colliderect(inimigo.rect)
+
         # Checagem de Game Over
-        if auto_colisao or cobrinha.colliderect(t_teto) or cobrinha.colliderect(t_chao) or cobrinha.colliderect(parede_direita) or cobrinha.colliderect(parede_esquerda):
+        if auto_colisao or colisao_inimigo or cobrinha.colliderect(t_teto) or cobrinha.colliderect(t_chao) or cobrinha.colliderect(parede_direita) or cobrinha.colliderect(parede_esquerda):
             time.sleep(0.3)
             fonte2 = pygame.font.SysFont('Comic Sans', 25, True, False)
             fonte3 = pygame.font.SysFont('Comic Sans', 50, True, False)
