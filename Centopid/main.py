@@ -5,7 +5,6 @@ from random import randint
 import os
 import time
 import Bib_Centopid
-
 from config import (
     LARGURA_TELA,
     ALTURA_TELA,
@@ -37,10 +36,10 @@ DIRECOES_OPOSTAS = {
     'BAIXO': 'CIMA',
 }
 
-# Reiniciar variáveis do jogo
+# Reiniciar variáveis do jogo (incluindo o estado de pausa)
 def reiniciar():
     global pontos, tam_inicial, x_cobra, y_cobra, lista_cabeca, lista_cobra
-    global velocidade, x_controle, y_controle, morreu, direcao_atual, proxima_direcao
+    global velocidade, x_controle, y_controle, morreu, pausado, direcao_atual, proxima_direcao
     pontos = 0
     tam_inicial = TAMANHO_INICIAL
     x_cobra = int(LARGURA_TELA // 2)
@@ -53,6 +52,7 @@ def reiniciar():
     direcao_atual = 'DIREITA'
     proxima_direcao = 'DIREITA'
     morreu = False
+    pausado = False
     food.sortear_posicao()
     comida_especial.sortear_posicao()
     inimigo.sortear_posicao()
@@ -243,22 +243,34 @@ while True:
                 pygame.quit()
                 exit()
 
-            # Controle de movimento da centopeia (Issue #26: previne comandos opostos imediatos)
             if evento.type == KEYDOWN:
-                nova_dir = None
-                if evento.key == K_a or evento.key == K_LEFT:
-                    nova_dir = 'ESQUERDA'
-                elif evento.key == K_d or evento.key == K_RIGHT:
-                    nova_dir = 'DIREITA'
-                elif evento.key == K_w or evento.key == K_UP:
-                    nova_dir = 'CIMA'
-                elif evento.key == K_s or evento.key == K_DOWN:
-                    nova_dir = 'BAIXO'
+                # Tecla P para pausar/despausar o jogo
+                if evento.key == K_p:
+                    pausado = not pausado
 
-                if nova_dir is not None:
-                    # Ignora comando se for exatamente oposto a direcao atual ou a proxima direcao ja agendada no mesmo frame
-                    if DIRECOES_OPOSTAS.get(nova_dir) != direcao_atual and DIRECOES_OPOSTAS.get(nova_dir) != proxima_direcao:
-                        proxima_direcao = nova_dir
+                # Controle de movimento da centopeia (só processa se não estiver pausado)
+                if not pausado:
+                    nova_dir = None
+                    if evento.key == K_a or evento.key == K_LEFT:
+                        nova_dir = 'ESQUERDA'
+                    elif evento.key == K_d or evento.key == K_RIGHT:
+                        nova_dir = 'DIREITA'
+                    elif evento.key == K_w or evento.key == K_UP:
+                        nova_dir = 'CIMA'
+                    elif evento.key == K_s or evento.key == K_DOWN:
+                        nova_dir = 'BAIXO'
+
+                    if nova_dir is not None:
+                        if DIRECOES_OPOSTAS.get(nova_dir) != direcao_atual and DIRECOES_OPOSTAS.get(nova_dir) != proxima_direcao:
+                            proxima_direcao = nova_dir
+
+        # Se o jogo estiver pausado, exibe a mensagem de pausa e congela as atualizações lógicas
+        if pausado:
+            msg_pausa = fonte.render("JOGO PAUSADO - Pressione 'P' para continuar", True, COR_PRETO)
+            ret_pausa = msg_pausa.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+            tela.blit(msg_pausa, ret_pausa)
+            pygame.display.flip()
+            continue
 
         direcao_atual = proxima_direcao
         if direcao_atual == 'ESQUERDA':
