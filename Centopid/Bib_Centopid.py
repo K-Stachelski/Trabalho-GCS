@@ -1,10 +1,18 @@
 import pygame
+import random
 from random import randint
 import os
 import json
+from config import (
+    LARGURA_TELA,
+    ALTURA_TELA,
+    COR_SERGIO,
+    COR_CLAUDIO,
+    RAIO_CENTOPEIA,
+)
 
-largura = 800
-altura = 500
+largura = LARGURA_TELA
+altura = ALTURA_TELA
 
 tela = pygame.display.set_mode((largura, altura))
 
@@ -70,19 +78,57 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location
 
 # Sprite Comidinha
+
+
 class Food(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.sprites = []
-        self.sprites.append(pygame.image.load('imagens/comida.png'))
-        self.atual = 0
-        self.image = self.sprites[self.atual]
-        self.rect = self.image.get_rect()
+
+        self.tipos = {
+            "normal": {
+                "pontos": 1,
+                "crescimento": 2,
+                "cor": (0, 255, 0)
+            },
+            "especial": {
+                "pontos": 3,
+                "crescimento": 4,
+                "cor": (255, 255, 0)
+            },
+            "bonus": {
+                "pontos": 5,
+                "crescimento": 0,
+                "cor": (180, 0, 255)
+            }
+        }
+
+        self.imagem_original = pygame.image.load('imagens/comida.png').convert_alpha()
+
+        self.rect = self.imagem_original.get_rect()
         self.rect.topleft = (x, y)
+
+        self.sorteia_tipo()
+
+    def sorteia_tipo(self):
+        self.tipo = random.choices(
+            ["normal", "especial", "bonus"],
+            weights=[60, 25, 15],
+            k=1
+        )[0]
+
+        dados = self.tipos[self.tipo]
+        self.pontos = dados["pontos"]
+        self.crescimento = dados["crescimento"]
+
+        self.image = self.imagem_original.copy()
+        self.image.fill(dados["cor"], special_flags=pygame.BLEND_RGBA_MULT)
 
     def sortear_posicao(self):
         self.rect.x = randint(0, largura - self.rect.width)
         self.rect.y = randint(0, altura - self.rect.height)
+        self.sorteia_tipo()
+
+
 
 # Cria botoes
 class Button():
@@ -105,8 +151,8 @@ def carregar_arquivos():
 
 def aumenta_cobra(lista_cobra):
     for xy in lista_cobra:
-        pygame.draw.circle(tela, (44, 44, 44), (int(xy[0]), int(xy[1])), 15) # skin Sérgio
+        pygame.draw.circle(tela, COR_SERGIO, (int(xy[0]), int(xy[1])), RAIO_CENTOPEIA) # skin Sérgio
 
 def aumenta_cobra2(lista_cobra):
     for xy in lista_cobra:
-        pygame.draw.circle(tela, (126, 20, 186), (int(xy[0]), int(xy[1])), 15) # skin Cláudio
+        pygame.draw.circle(tela, COR_CLAUDIO, (int(xy[0]), int(xy[1])), RAIO_CENTOPEIA) # skin Cláudio
